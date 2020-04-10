@@ -2,7 +2,7 @@
 
 This program reduces noise in the data coming from a LIDAR sensor attached to a robot. It filters the scans into a Range and a Temporal Median filter.
 
-## Example (size: 20)
+## Example
 
 Here is an example of scans of size 20:
 
