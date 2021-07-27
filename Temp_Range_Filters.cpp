@@ -1,6 +1,3 @@
-// Description: This program reduces the noise in the data coming from
-// a LIDAR sensor attached to a robot.
-
 #include <iostream>
 using namespace std;
 
@@ -9,10 +6,13 @@ class range_filter{
         float range_min = 0.03;
         float range_max = 50.0;
 
-        /** This method is used to get Range filters from the given array of length-N
-        *
-        *@return  scan      returns the range filtered scan
-        */
+        /** 
+         * This method is used to get Range filters from the given array of length-N
+         *
+         * @param  scan   input array
+         * @param  N      input array length
+         * @return scan   range filtered scan
+         */
         float* update(float scan[], const int N){
             for (int i = 0; i < N; i++) {
                 // replace smallest values with min value
@@ -30,10 +30,24 @@ class range_filter{
 
 class temp_m_filter{
     public:
-        /** This method is used to get Temporal median filters from the given array of length-N
-        *
-        *@return  arr       returns the temporal median filtered scan
-        */
+        /** 
+         * This method is used to get Temporal median filters from the given array of length-N 
+         *
+         * @param  new_scan    input array
+         * @param  N           input array length
+         * @param  T           total number of times to update (T < 6)
+         * @param  count       current updated filter (count <= T)
+         *                     determines how to get new median filter values
+         * @param  arr0        previous output scan
+         * @param  arr1        previous output scan
+         * @param  arr2        previous output scan
+         * @param  arr3        previous output scan
+         * @param  arr4        previous output scan
+         * @param  scan1       input scan 
+         * @param  scan2       input scan
+         * @param  scan3       input scan
+         * @return  arr        temporal median filtered scan
+         */
         float* update(float new_scan[], const int N, const int T, int count, float arr0[], float arr1[],
                       float arr2[], float arr3[], float arr4[], float scan1[], float scan2[], float scan3[]){
             // first scan just returns itself
@@ -141,9 +155,22 @@ class temp_m_filter{
         }
 };
 
-/** This function is used to output the new temporal medium filtered scan
+/** 
+ * This function is used to output the new temporal medium filtered scan
  *
- *@call  new_scan       calls the temporal method to get filtered scan and save previous scans
+ * @param  new_scan    input array
+ * @param  N           input array length
+ * @param  T           total number of times to update (T < 6)
+ * @param  count       current updated filter (count <= T)
+ *                     determines how to get new median filter values
+ * @param  arr0        previous output scan
+ * @param  arr1        previous output scan
+ * @param  arr2        previous output scan
+ * @param  arr3        previous output scan
+ * @param  arr4        previous output scan
+ * @param  scan1       input scan 
+ * @param  scan2       input scan
+ * @param  scan3       input scan
  */
 int temp_filter(float* new_scan, const int N, const int T, int count, float arr0[], float arr1[], 
                 float arr2[], float arr3[], float arr4[], float scan1[], float scan2[], float scan3[]){
@@ -153,7 +180,7 @@ int temp_filter(float* new_scan, const int N, const int T, int count, float arr0
     // output new temporal medium filtered scan
     cout << "[";
     for(int i = 0; i < N; i++){
-        if(i < N-1){
+        if(i < N - 1){
             cout << new_scan_[i] << ", ";
         }
         else{
@@ -164,10 +191,16 @@ int temp_filter(float* new_scan, const int N, const int T, int count, float arr0
     return 0;
 }
 
-/** This function is the Driver function, gets inputs and calls Range update and temp_filter
-*
-*@call  range, temp_filter      calls for updates to input scans
-*/
+/**
+ * <h1>LIDAR Sensor Filters</h1>
+ * This program reduces the noise in the data coming from
+ * a LIDAR sensor attached to a robot.
+ *
+ * This function is the Driver function, gets inputs and
+ * calls Range update and temp_filter
+ *
+ * @author  Blane Staskiewicz
+ */
 int main(){
     int N = 0;
     int T = 0;
@@ -183,6 +216,7 @@ int main(){
     float* arr2 = new float[N];
     float* arr3 = new float[N];
     float* arr4 = new float[N];
+    
     // allocate memory for arrays of length-N
     float* arr0 = new float[N];
     float* scan1 = new float[N];
