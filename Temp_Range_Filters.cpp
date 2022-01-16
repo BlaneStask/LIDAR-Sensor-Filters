@@ -1,8 +1,8 @@
 #include <iostream>
 using namespace std;
 
-class range_filter{
-    public:
+class range_filter {
+    private:
         float range_min = 0.03;
         float range_max = 50.0;
 
@@ -13,14 +13,14 @@ class range_filter{
          * @param  N      input array length
          * @return scan   range filtered scan
          */
-        float* update(float scan[], const int N){
+        float* update(float scan[], const int N) {
             for (int i = 0; i < N; i++) {
                 // replace smallest values with min value
-                if(scan[i] < range_min){
+                if (scan[i] < range_min) {
                     scan[i] = range_min;
                 }
                 // replace largest values with max value
-                else if(scan[i] > range_max){
+                else if (scan[i] > range_max) {
                     scan[i] = range_max;
                 }
             }
@@ -28,7 +28,7 @@ class range_filter{
         }
 };
 
-class temp_m_filter{
+class temp_m_filter {
     public:
         /** 
          * This method is used to get Temporal median filters from the given array of length-N 
@@ -49,34 +49,34 @@ class temp_m_filter{
          * @return  arr        temporal median filtered scan
          */
         float* update(float new_scan[], const int N, const int T, int count, float arr0[], float arr1[],
-                      float arr2[], float arr3[], float arr4[], float scan1[], float scan2[], float scan3[]){
+                      float arr2[], float arr3[], float arr4[], float scan1[], float scan2[], float scan3[]) {
             // first scan just returns itself
-            if(count == 0){
-                for(int i = 0; i < N; i++){
+            if (count == 0) {
+                for (int i = 0; i < N; i++) {
                     arr0[i] = new_scan[i];
                 }
                 return new_scan;
             }
             // with two scans, can add values and divide by 2 to get median
-            else if(count == 1){
-                for(int i = 0; i < N; i++){
+            else if (count == 1) {
+                for (int i = 0; i < N; i++) {
                     arr1[i] += (new_scan[i] + arr0[i])/2;
                     scan1[i] += new_scan[i];
                 }
                 return arr1;
             }
             // even value, find middle value (not smallest and not largest of the 3)
-            else if(count % 2 == 0){
-                for(int i = 0; i < N; i++){
-                    if((new_scan[i] >= scan1[i] && new_scan[i] <= arr0[i]) ||
-                       (new_scan[i] <= scan1[i] && new_scan[i] >= arr0[i])){
+            else if (count % 2 == 0) {
+                for (int i = 0; i < N; i++) {
+                    if ((new_scan[i] >= scan1[i] && new_scan[i] <= arr0[i]) ||
+                       (new_scan[i] <= scan1[i] && new_scan[i] >= arr0[i])) {
                         arr2[i] += new_scan[i];
                     }
-                    else if((scan1[i] >= new_scan[i] && scan1[i] <= arr0[i]) ||
-                       (scan1[i] <= new_scan[i] && scan1[i] >= arr0[i])){
+                    else if ((scan1[i] >= new_scan[i] && scan1[i] <= arr0[i]) ||
+                       (scan1[i] <= new_scan[i] && scan1[i] >= arr0[i])) {
                         arr2[i] += scan1[i];
                     }
-                    else{
+                    else {
                         arr2[i] += arr0[i];
                     }
                     scan2[i] += new_scan[i];
@@ -84,65 +84,65 @@ class temp_m_filter{
                 return arr2;
             }
             // odd value, find largest and smallest value and disguard, add 2 middle and divide by 2
-            else if(count % 2 != 0){
-                for(int i = 0; i < N; i++){
+            else if (count % 2 != 0) {
+                for (int i = 0; i < N; i++) {
                     // new_scan largest
-                    if(new_scan[i] >= scan2[i] && new_scan[i] >= scan1[i] && new_scan[i] >= arr0[i]){
+                    if (new_scan[i] >= scan2[i] && new_scan[i] >= scan1[i] && new_scan[i] >= arr0[i]) {
                         // arr0 is smallest
-                        if(arr0[i] <= scan1[i] && arr0[i] <= scan2[i] && arr0[i] <= new_scan[i]){
+                        if (arr0[i] <= scan1[i] && arr0[i] <= scan2[i] && arr0[i] <= new_scan[i]) {
                             arr3[i] += (scan2[i] + scan1[i])/2;
                         }
                         // arr1 is smallest
-                        else if(scan1[i] <= arr0[i] && scan1[i] <= scan2[i] && scan1[i] <= new_scan[i]){
+                        else if (scan1[i] <= arr0[i] && scan1[i] <= scan2[i] && scan1[i] <= new_scan[i]) {
                             arr3[i] += (scan2[i] + arr0[i])/2;
                         }
                         // arr2 is smallest
-                        else{
+                        else {
                             arr3[i] += (scan1[i] + arr0[i])/2;
                         }
                     }
                     // arr0 is largest
-                    else if(arr0[i] >= scan2[i] && arr0[i] >= scan1[i] && arr0[i] >= new_scan[i]){
+                    else if (arr0[i] >= scan2[i] && arr0[i] >= scan1[i] && arr0[i] >= new_scan[i]) {
                         // new_scan is smallest
-                        if(new_scan[i] <= scan1[i] && new_scan[i] <= scan2[i] && new_scan[i] <= arr0[i]){
+                        if (new_scan[i] <= scan1[i] && new_scan[i] <= scan2[i] && new_scan[i] <= arr0[i]) {
                             arr3[i] += (scan2[i] + scan1[i])/2;
                         }
                         // arr1 is smallest
-                        else if(scan1[i] <= arr0[i] && scan1[i] <= scan2[i] && scan1[i] <= new_scan[i]){
+                        else if (scan1[i] <= arr0[i] && scan1[i] <= scan2[i] && scan1[i] <= new_scan[i]) {
                             arr3[i] += (scan2[i] + arr0[i])/2;
                         }
                         // arr2 is smallest
-                        else{
+                        else {
                             arr3[i] += (scan1[i] + new_scan[i])/2;
                         }
                     }
                     // arr1 is largest
-                    else if(scan1[i] >= scan2[i] && scan1[i] >= new_scan[i] && scan1[i] >= arr0[i]){
+                    else if (scan1[i] >= scan2[i] && scan1[i] >= new_scan[i] && scan1[i] >= arr0[i]) {
                         // arr0 is smallest
-                        if(arr0[i] <= scan1[i] && arr0[i] <= scan2[i] && arr0[i] <= new_scan[i]){
+                        if (arr0[i] <= scan1[i] && arr0[i] <= scan2[i] && arr0[i] <= new_scan[i]) {
                             arr3[i] += (scan2[i] + new_scan[i])/2;
                         }
                         // arr2 is smallest
-                        else if(scan2[i] <= arr0[i] && scan2[i] <= scan1[i] && scan2[i] <= new_scan[i]){
+                        else if (scan2[i] <= arr0[i] && scan2[i] <= scan1[i] && scan2[i] <= new_scan[i]) {
                             arr3[i] += (new_scan[i] + arr0[i])/2;
                         }
                         // new_scan is smallest
-                        else{
+                        else {
                             arr3[i] += (scan2[i] + arr0[i])/2;
                         }
                     }
                     // arr2 is largest
-                    else{
+                    else {
                         //arr0 is smallest
-                        if(arr0[i] <= scan1[i] && arr0[i] <= scan2[i] && arr0[i] <= new_scan[i]){
+                        if (arr0[i] <= scan1[i] && arr0[i] <= scan2[i] && arr0[i] <= new_scan[i]) {
                             arr3[i] += (new_scan[i] + scan1[i])/2;
                         }
                         // arr1 is smallest
-                        else if(scan1[i] <= arr0[i] && scan1[i] <= scan2[i] && scan1[i] <= new_scan[i]){
+                        else if (scan1[i] <= arr0[i] && scan1[i] <= scan2[i] && scan1[i] <= new_scan[i]) {
                             arr3[i] += (new_scan[i] + arr0[i])/2;
                         }
                         // new_scan is smallest
-                        else{
+                        else {
                             arr3[i] += (scan1[i] + arr0[i])/2;
                         }
                     }
@@ -173,17 +173,17 @@ class temp_m_filter{
  * @param  scan3       input scan
  */
 int temp_filter(float* new_scan, const int N, const int T, int count, float arr0[], float arr1[], 
-                float arr2[], float arr3[], float arr4[], float scan1[], float scan2[], float scan3[]){
+                float arr2[], float arr3[], float arr4[], float scan1[], float scan2[], float scan3[]) {
     temp_m_filter object_;
     float *new_scan_ = object_.update(new_scan, N, T, count, arr0, arr1, arr2, arr3, arr4, scan1, scan2, scan3);
     
     // output new temporal medium filtered scan
     cout << "[";
-    for(int i = 0; i < N; i++){
-        if(i < N - 1){
+    for (int i = 0; i < N; i++) {
+        if (i < N - 1) {
             cout << new_scan_[i] << ", ";
         }
-        else{
+        else {
             cout << new_scan_[i];
         }
     }
@@ -201,7 +201,7 @@ int temp_filter(float* new_scan, const int N, const int T, int count, float arr0
  *
  * @author  Blane Staskiewicz
  */
-int main(){
+int main() {
     int N = 0;
     int T = 0;
     int count = 0;
@@ -222,18 +222,19 @@ int main(){
     float* scan1 = new float[N];
     float* scan2 = new float[N];
     float* scan3 = new float[N];
+    
+    // valid measurements check
+    if (N > 1000) {
+        cout << "Invalid range measurements (max: 1000)." << endl;
+        return 0;
+    }
+    else if (N < 200) {
+        cout << "Invalid range measurements (min: 200)." << endl;
+        return 0;
+    }
 
     // based on how many times the scans are updated
-    for(int i = 0; i < T; i++){
-        if(N > 1000){
-            cout << "Invalid range measurements (max: 1000)." << endl;
-            return 0;
-        }
-        else if(N < 200){
-            cout << "Invalid range measurements (min: 200)." << endl;
-            return 0;
-        }
-        
+    for (int i = 0; i < T; i++) {
         float scan[N];
         for (int i = 0; i < N; i++) {
             cout << "Array values from the scan: " << endl;
@@ -246,11 +247,11 @@ int main(){
         // output new range filtered scan
         cout << "The Scan after the Range Filter is: " << endl;
         cout << "[";
-        for(int i = 0; i < N; i++){
-            if(i < N-1){
+        for (int i = 0; i < N; i++) {
+            if (i < N-1) {
                 cout << new_scan[i] << ", ";
             }
-            else{
+            else {
                 cout << new_scan[i];
             }
         }
@@ -258,7 +259,7 @@ int main(){
         cout << "The Scan after the Temporal Median Filter is: " << endl;
         temp_filter(new_scan, N, T, count, arr0, arr1, arr2, arr3, arr4, scan1, scan2, scan3);
         
-        if(count < T){
+        if (count < T) {
             count++;
         }
     }
